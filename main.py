@@ -9,11 +9,11 @@ import pandas as pd
 
 # 要正常运行，只需要修改以下四个变量的值：
 # dir_grades是包含所有同学成绩的Excel表所在目录
-dir_grades = '/Users/admin/Desktop/scholarship/2021级全部成绩.xls'
+dir_grades = '/Users/feifei/Desktop/学院本科生工作/奖助工作/2023-2024学年/奖学金/scholarship 2_2022级/课程成绩信息 -2022.xlsx'
 # dir_nontrans表示专业课名单Excel表所在目录
-dir_nontrans = '/Users/admin/Desktop/scholarship/数学学院专业成绩课程列表（计算专业绩点用-数学类）-20220908.xls'
+dir_nontrans = '/Users/feifei/Desktop/学院本科生工作/奖助工作/2023-2024学年/奖学金/scholarship 2_2022级/数学学院专业成绩课程列表（计算专业绩点用-数学类）-20220908.xls'
 # points表示该学年应该修读数学课程的分数
-points = 40
+points = 27
 # no_math_class_grade代表没有修读专业课程的同学专业课绩点赋值，此处设置为0
 no_math_class_grade = 0
 
@@ -36,7 +36,8 @@ class Grades:
 
         # 输出挂科不能参评名单
         temp_df = pd.read_excel(dir_grade, index_col=None)
-        f_man = temp_df[(temp_df['成绩'] == 'F') | (temp_df['成绩'] == 'NP') | (temp_df['成绩'] == 'X')].loc[:,
+        f_man = temp_df[
+                    (temp_df['最终成绩'] == 'F') | (temp_df['最终成绩'] == 'NP') | (temp_df['最终成绩'] == 'X')].loc[:,
                 ['学号', '姓名']].drop_duplicates()
         f_man.to_excel('./挂科不能参评名单.xlsx', index=False)
 
@@ -45,12 +46,12 @@ class Grades:
         temp_df = temp_df[~temp_df['学号'].isin(f_man)]
 
         # 得到缓考成绩未出同学名单
-        pending_man = temp_df[temp_df['成绩'] == '?'].loc[:, ['学号', '姓名']].drop_duplicates()
+        pending_man = temp_df[temp_df['最终成绩'] == '?'].loc[:, ['学号', '姓名']].drop_duplicates()
         pending_man.to_excel('./缓考成绩未出同学名单.xlsx', index=False)
 
         # 修改原文件，将所有PNP课程与缓考未出成绩课程去掉
-        temp_df = temp_df[(temp_df['成绩'] != 'P') & (temp_df['成绩'] != '?')]
-        temp_df['绩点'] = temp_df['成绩'].map(grade_point)
+        temp_df = temp_df[(temp_df['最终成绩'] != 'P') & (temp_df['最终成绩'] != '?')]
+        temp_df['绩点'] = temp_df['最终成绩'].map(grade_point)
         temp_df['学分绩'] = temp_df['绩点'] * temp_df['学分']
         self.raw = temp_df
         self.dir_nontrans = dir_nontran
